@@ -76,6 +76,22 @@ function init()
 	floor.receiveShadow  = true;
 	floor.rotation.x = Math.PI / 2;
 	scene.add(floor);
+
+	// WALLS
+    var wallMaterial = new THREE.MeshPhongMaterial( { color: '#0000aa', side: THREE.DoubleSide } );
+    var wallGeometry = new THREE.PlaneGeometry(30, 30, 10, 10);
+    var wall = new THREE.Mesh(wallGeometry, wallMaterial);
+    wall.rotation.y = Math.PI / 2;
+    wall.position.x = 15;
+    scene.add(wall);
+
+    var wallMaterial2 = new THREE.MeshPhongMaterial( { color: '#aa00aa', side: THREE.DoubleSide } );
+    var wallGeometry2 = new THREE.PlaneGeometry(30, 30, 10, 10);
+    var wall2 = new THREE.Mesh(wallGeometry2, wallMaterial2);
+    wall2.rotation.z = Math.PI;
+    wall2.position.z = 15;
+    scene.add(wall2);
+
 	// SKYBOX/FOG
 	var skyBoxGeometry = new THREE.BoxGeometry( 10000, 10000, 10000 );
 	var skyBoxMaterial = new THREE.MeshPhongMaterial( { color: 0x9999ff, side: THREE.BackSide } );
@@ -88,7 +104,7 @@ function init()
 	////////////
     world = new CANNON.World();
 
-    world.gravity.set(0, -9.82 * 20, 0);
+    world.gravity.set(0, -9.82 * 10, 0);
     world.broadphase = new CANNON.NaiveBroadphase();
     world.solver.iterations = 16;
 
@@ -100,6 +116,15 @@ function init()
     world.add(floorBody);
 
     //Walls
+    var barrierBody = new CANNON.Body({mass: 0, shape: new CANNON.Plane(), material: DiceManager.barrierBodyMaterial});
+    barrierBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -Math.PI / 2);
+    barrierBody.position.set(wall.position.x, wall.position.y, wall.position.z)
+    world.add(barrierBody);
+
+    var barrierBody2 = new CANNON.Body({mass: 0, shape: new CANNON.Plane(), material: DiceManager.barrierBodyMaterial});
+    barrierBody2.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -Math.PI);
+    barrierBody2.position.set(wall2.position.x, wall2.position.y, wall2.position.z)
+    world.add(barrierBody2);
 
     var colors = ['#ff0000', '#ffff00', '#00ff00', '#0000ff', '#ff00ff'];
     for (var i = 0; i < 5; i++) {
